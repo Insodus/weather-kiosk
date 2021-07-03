@@ -1,5 +1,4 @@
 var request = require('request');
-var fs = require('fs');
 
 var opts = {
     url: 'https://lakemonster.com/lake/NH/Lake%20Sunapee-water-temperature-3141',
