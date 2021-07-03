@@ -1,7 +1,7 @@
 var request = require('request');
 
 var opts = {
-    url: 'https://api.weather.com/v3/wx/forecast/daily/5day?postalKey=01036:US&units=e&language=en&format=json&apiKey=c9b9de42f3d44b64b9de42f3d4db64db',
+    url: 'https://api.weather.com/v3/wx/forecast/daily/5day?postalKey=03782:US&units=e&language=en&format=json&apiKey=c9b9de42f3d44b64b9de42f3d4db64db',
     timeout: 10000
 };
 
