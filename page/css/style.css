@@ -9932,3 +9932,6 @@ span.customSelect.changed {
 .weather-sunny {
     background-image: url(../sunny.png);
 }
+.weather-lightning {
+    background-image: url(../lightning.png);
+}
