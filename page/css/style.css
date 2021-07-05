@@ -9885,20 +9885,24 @@ span.customSelect.changed {
 }
 
 #radar-wrap {
-    width:800px;
+    width: 800px;
     height: 460px;
-    overflow:hidden;
-    margin:0;
+    overflow: hidden;
+    margin: 0;
 }
 
-#radar-map {
-    display:block;
+.radar-close img {
+    display: block;
+    height: 2100px;
+    width: 3840px;
+    margin:-54% 0 0 -204%;
+}
+
+.radar-wide img {
+    display: block;
     height: 700px;
     width: 1280px;
-}
-
-#radar-wrap #radar-map {
-    margin:-10% 0 -10% -30%;
+    margin:-3% 0 0 -35%;
 }
 
 .forecast-item {

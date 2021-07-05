@@ -1,5 +1,5 @@
 {
-  "name": "sunapee-kiosk-scripts",
+  "name": "weather-kiosk-scripts",
   "version": "1.0.0",
   "description": "",
   "main": "get_water_temp.js",
