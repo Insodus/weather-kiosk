@@ -17,6 +17,10 @@ function getIp() {
         }
     }
 
+    if (results['wlp1s0'] != null) {
+        return results['wlp1s0'][0];
+    }
+
     if (results['Wi-Fi'] != null) {
         return results['Wi-Fi'][0];
     }
