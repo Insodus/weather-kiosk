@@ -72,7 +72,7 @@
                 <h2><i class="fa fa-map-marker red"></i><strong>Radar</strong></h2>
               </div>
               <div class="panel-body">
-                <div id="radar-wrap" class="radar-close">
+                <div id="radar-wrap" class="radar-wide">
                   <img src="animate.gif" />
                 </div>
               </div>
