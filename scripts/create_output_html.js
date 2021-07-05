@@ -1,14 +1,39 @@
-var request = require('request');
 var fs = require('fs');
 var moment = require('moment');
+const { networkInterfaces } = require('os');
+
+function getIp() {
+    var nets = networkInterfaces();
+    var results = Object.create(null);
+
+    for (const name of Object.keys(nets)) {
+        for (const net of nets[name]) {
+            if (net.family === 'IPv4' && !net.internal) {
+                if (!results[name]) {
+                    results[name] = [];
+                }
+                results[name].push(net.address);
+            }
+        }
+    }
+
+    if (results['Wi-Fi'] != null) {
+        return results['Wi-Fi'][0];
+    }
+
+    if (results['eth0'] != null) {
+        return results['eth0'][0];
+    }
+
+    return '';
+}
 
 async function doCopy() {
 
     // start with no vals
     var temp = '??';
-    var humid = '??';
-    var water_temp = '??';
     var forecastHtml = '??';
+    var current_obs = "??";
 
     // get date and time strings
     var now = moment();
@@ -19,13 +44,14 @@ async function doCopy() {
     var forecast = require('./cache_forecast.json');
     var water = require('./cache_water_temp.json');
 
-    // get current stuff
+    // get current observations
     var observations = weather.observations[0];
-    humid = observations.humidity;
     temp = observations.imperial.temp;
 
-    // get water temp
-    water_temp = water.water_temp;
+    current_obs = `Humidity is ${observations.humidity}%, heat index is ${observations.imperial.heatIndex}°, windchill is ${observations.imperial.windChill}° and pressure is ${observations.imperial.pressure}.`;
+
+    // get current ip
+    var ip = getIp();
 
     // forecast helperss
     function createListItem(wxType, dayDesc, forec) {
@@ -116,9 +142,11 @@ async function doCopy() {
         var result = data.replace(/{{time}}/g, timeStr);
         result = result.replace(/{{date}}/g, dateStr);
         result = result.replace(/{{air_temp}}/g, temp);
-        result = result.replace(/{{water_temp}}/g, water_temp);
+        result = result.replace(/{{water_temp}}/g, water.water_temp);
         result = result.replace(/{{forecast}}/g, forecastHtml);
-
+        result = result.replace(/{{last_update}}/g, water.last_update);
+        result = result.replace(/{{ip}}/g, ip);
+        result = result.replace(/{{current_obs}}/g, current_obs);
     
         fs.writeFile('../page/index.html', result, 'utf8', function (err2) {
             if (err2) {

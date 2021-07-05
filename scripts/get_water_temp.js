@@ -1,5 +1,6 @@
 var request = require('request');
 var fs = require('fs');
+var moment = require('moment');
 var app_config = require('./app_config');
 
 function getWaterTemp() {
@@ -28,7 +29,8 @@ function getWaterTemp() {
 
 async function getAndStore() {
     var water_temp = await getWaterTemp();
-    var output_json = ` { "water_temp" : ${water_temp} } `;
+    var last_update = moment().format("dddd, MMMM Do YYYY, h:mm:ss a");
+    var output_json = ` { "water_temp" : ${water_temp} , "last_update" : "${last_update}" } `;
     fs.writeFile('cache_water_temp.json', output_json, 'utf8', function (err) {
         if (err) throw err;
         console.log('Wrote water temp.');
