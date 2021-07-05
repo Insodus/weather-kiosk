@@ -1,55 +1,40 @@
 var request = require('request');
+var fs = require('fs');
+var app_config = require('./app_config');
 
-var opts = {
-    url: 'https://api.weather.com/v3/wx/forecast/daily/5day?postalKey=03782:US&units=e&language=en&format=json&apiKey=c9b9de42f3d44b64b9de42f3d4db64db',
-    timeout: 10000
-};
+function getCurrentForecast() {
+    return new Promise((resolve, reject) => {
+        var opts = {
+            url: `https://api.weather.com/v3/wx/forecast/daily/5day?postalKey=${app_config.zipcode}:US&units=e&language=en&format=json&apiKey=${app_config.apikey}`,
+            timeout: 10000
+        };
 
-request(opts, function (err, res, body) {
-    if (err) {
-        console.error('Could not get forecast from API!', err);
-        return
-    }
+        request(opts, function (err, res, body) {
+            if (err) {
+                reject(err);
+                return;
+            }
 
-    var weather = JSON.parse(body);
-    var detail = weather.daypart[0];
+            if (res.statusCode != 200) {
+                reject('Non-200 from weather.com: ' + res.statusCodes);
+                return;
+            }
 
-    console.log(weather.temperatureMax);
-    console.log(weather.temperatureMin);
-    console.log(detail.daypartName);
-    console.log('----');
+            resolve(body);
+        });
+    });
+}
 
-    var forecastsAdded = 0;
-    var totalNeeded = 4;
-    var currentIndex = 0;
-    var forecastsAvailable = weather.temperatureMin.length;
+async function getAndStore() {
+    var current_json = await getCurrentForecast();
+    fs.writeFile('cache_forecast.json', current_json, 'utf8', function (err) {
+        if (err) throw err;
+        console.log('Wrote forecast.');
+}   );
+}
 
-    while(forecastsAdded < totalNeeded && currentIndex < forecastsAvailable) {
-        var dayIndex = currentIndex * 2;
-        var nightIndex = dayIndex + 1;
-
-        var day = weather.dayOfWeek[currentIndex];
-        var maxTemp = weather.temperatureMax[currentIndex];
-        var minTemp = weather.temperatureMin[currentIndex];
-
-        var dayName = detail.daypartName[dayIndex];
-        var detailDay = detail.narrative[dayIndex];
-
-        var nightName = detail.daypartName[nightIndex];
-        var nightDay = detail.narrative[nightIndex];
-
-        console.log('Date:', day, 'Min:', minTemp, 'Max:', maxTemp);
-
-        if (weather.temperatureMax[currentIndex] != null && detail.narrative[dayIndex] != null) {
-            // daytime isnt over yet so add this one
-            console.log(dayName, detailDay);
-
-            forecastsAdded++;
-        }
-
-        console.log(nightName, nightDay);
-        forecastsAdded++;
-        currentIndex++;
-    }
-
-});
+try {
+    getAndStore();
+} catch (err) {
+    console.error('Could not write forecast file', err);
+}

@@ -1,21 +1,40 @@
 var request = require('request');
+var fs = require('fs');
+var app_config = require('./app_config');
 
-var opts = {
-    url: 'https://api.weather.com/v2/pws/observations/current?numericPrecision=decimal&stationId=KNHSUNAP26&units=e&format=json&apiKey=c9b9de42f3d44b64b9de42f3d4db64db',
-    timeout: 10000
-};
+function getCurrentTemp() {
+    return new Promise((resolve, reject) => {
+        var opts = {
+            url: `https://api.weather.com/v2/pws/observations/current?numericPrecision=decimal&stationId=${app_config.station}&units=e&format=json&apiKey=${app_config.apikey}`,
+            timeout: 10000
+        };
+        
+        request(opts, function (err, res, body) {
+            if (err) {
+                reject(err);
+                return;
+            }
 
-request(opts, function (err, res, body) {
-    if (err) {
-        console.error('Could not get current from API!', err);
-        return
-    }
+            if (res.statusCode != 200) {
+                reject('Non-200 from weather.com: ' + res.statusCodes);
+                return;
+            }
 
-    var weather = JSON.parse(body);
-    var observations = weather.observations[0];
+            resolve(body);
+        });
+    });
+}
 
-    var humid = observations.humidity;
-    var temp = observations.imperial.temp;
+async function getAndStore() {
+    var current_json = await getCurrentTemp();
+    fs.writeFile('cache_current.json', current_json, 'utf8', function (err) {
+        if (err) throw err;
+        console.log('Wrote current obs.');
+    });
+}
 
-    console.log('Temp', temp, 'Humid', humid);
-});
+try {
+    getAndStore();
+} catch (err) {
+    console.error('Could not write current obs file', err);
+}
