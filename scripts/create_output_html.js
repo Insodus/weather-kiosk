@@ -42,7 +42,7 @@ async function doCopy() {
     // get date and time strings
     var now = moment();
     var timeStr = now.format('h:mm A');
-    var dateStr = now.format('dddd MMMM, Qo');
+    var dateStr = now.format('dddd MMMM, Do');
 
     var weather = require('./cache_current.json');
     var forecast = require('./cache_forecast.json');
