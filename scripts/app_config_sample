@@ -1,0 +1,8 @@
+module.exports = {
+    animation_loc: 'hfd',
+    zipcode: '03782',
+    apikey: '',
+    station: 'KNHSUNAP26',
+    lakemonster_url: 'https://lakemonster.com/lake/NH/Lake%20Sunapee-water-temperature-3141',
+    lakemonster_matcher: /<div class='card_value_2' id='water_text'>([0-9°-\s]+)<\/div>/
+};

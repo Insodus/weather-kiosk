@@ -53,7 +53,7 @@
           <div class="col-lg-4">
             <div class="info-box dark-bg">
               <i class="fa fa-shower"></i>
-              <div class="count">{{water_temp}}°</div>
+              <div class="count">{{water_temp}}</div>
               <div class="title">Water Temp</div>
             </div>
             <!--/.info-box-->
