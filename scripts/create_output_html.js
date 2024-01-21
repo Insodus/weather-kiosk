@@ -29,6 +29,10 @@ function getIp() {
         return results['eth0'][0];
     }
 
+    if (results['Ethernet'] != null) {
+        return results['Ethernet'][0];
+    }
+
     return '';
 }
 
@@ -49,91 +53,39 @@ async function doCopy() {
     var water = require('./cache_water_temp.json');
 
     // get current observations
-    var observations = weather.observations[0];
-    temp = observations.imperial.temp;
-
-    current_obs = `Humidity is ${observations.humidity}%, heat index is ${observations.imperial.heatIndex}°, windchill is ${observations.imperial.windChill}° and pressure is ${observations.imperial.pressure}.`;
+    var observations = weather[0];
+    temp = observations.Temperature.Imperial.Value;
+    current_obs = forecast.Headline.Text;
 
     // get current ip
     var ip = getIp();
 
-    // forecast helperss
-    function createListItem(wxType, dayDesc, forec) {
-        var clsName = '';
-        switch(wxType) {
-            case 'Showers':
-            case 'Rain':
-            case 'PM Showers':
-            case 'Light Rain':
-            case 'Shwrs Late':
-                clsName = 'weather-rainy';
-                break;
+    function pad2(number) {
+        return (number < 10 ? '0' : '') + number
+    }
 
-            case 'M Cloudy':
-                clsName = 'weather-cloudy';
-                break;
+    function getLinkFromWeatherIcon(iconNum) {
+        return `https://developer.accuweather.com/sites/default/files/${pad2(iconNum)}-s.png`;
+    }
 
-            case 'P Cloudy':
-                clsName = 'weather-partly';
-                break;
-
-            case 'PM T-Storms':
-            case 'T-Storms':
-            case 'Sct T-Storms':
-                clsName = 'weather-lightning';
-                break;
-
-            case 'Clear Late':
-            default:
-                clsName = 'weather-sunny';
-                break;
-        }
-
+    function createForecastDivs(dayTxt, nightTxt, forecastItem) {
         return `<li class="list-group-item forecast-item">
-                <div class="weather-sprite ${clsName}"></div>
-                <h4 class="list-group-item-heading">${dayDesc}</h4>
-                <p class="list-group-item-text">${forec}</p>
-            </li>`;
+                <img class="weather-sprite" src="${getLinkFromWeatherIcon(forecastItem.Day.Icon)}"></img>
+                <h4 class="list-group-item-heading">${dayTxt}</h4>
+                <p class="list-group-item-text">${forecastItem.Day.IconPhrase}. High of ${forecastItem.Temperature.Maximum.Value} degrees.</p>
+                </li>
+                <li class="list-group-item forecast-item">
+                <img class="weather-sprite" src="${getLinkFromWeatherIcon(forecastItem.Night.Icon)}"></img>
+                <h4 class="list-group-item-heading">${nightTxt}</h4>
+                <p class="list-group-item-text">${forecastItem.Night.IconPhrase}. Low of ${forecastItem.Temperature.Minimum.Value} degrees.</p>
+                </li> `;
     }
 
     // do forecast
     forecastHtml = '<div class="list-group">';
-    var detail = forecast.daypart[0];
-
-    var forecastsAdded = 0;
-    var totalNeeded = 4;
-    var currentIndex = 0;
-    var forecastsAvailable = forecast.temperatureMin.length;
-
-    while(forecastsAdded < totalNeeded && currentIndex < forecastsAvailable) {
-        var dayIndex = currentIndex * 2;
-        var nightIndex = dayIndex + 1;
-
-        var day = forecast.dayOfWeek[currentIndex];
-        var maxTemp = forecast.temperatureMax[currentIndex];
-        var minTemp = forecast.temperatureMin[currentIndex];
-
-        var dayName = detail.daypartName[dayIndex];
-        var detailDay = detail.narrative[dayIndex];
-        var wxDay = detail.wxPhraseShort[dayIndex];
-
-        var nightName = detail.daypartName[nightIndex];
-        var nightDay = detail.narrative[nightIndex];
-        var wxNight = detail.wxPhraseShort[nightIndex];
-
-        if (forecast.temperatureMax[currentIndex] != null && detail.narrative[dayIndex] != null) {
-            // daytime isnt over yet so add this one
-            forecastHtml += createListItem(wxDay, dayName, detailDay);
-            forecastsAdded++;
-        }
-
-        if (forecastsAdded < totalNeeded) {
-            forecastHtml += createListItem(wxNight, nightName, nightDay);
-            forecastsAdded++;
-        }
-
-        currentIndex++;
-    }
+    var forecasts = forecast['DailyForecasts'];
+    forecastHtml += createForecastDivs('Today', 'Tonight', forecasts[0]);
+    forecastHtml += createForecastDivs('Tomorrow', 'Tomorrow Night',forecasts[1]);
     forecastHtml += '</div>';
 
     // do replacement
@@ -148,7 +100,7 @@ async function doCopy() {
         result = result.replace(/{{air_temp}}/g, temp);
         result = result.replace(/{{water_temp}}/g, water.water_temp);
         result = result.replace(/{{forecast}}/g, forecastHtml);
-        result = result.replace(/{{last_update}}/g, water.last_update);
+        result = result.replace(/{{last_update}}/g, water.water_update);
         result = result.replace(/{{ip}}/g, ip);
         result = result.replace(/{{current_obs}}/g, current_obs);
     

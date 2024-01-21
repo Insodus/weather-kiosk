@@ -3,4 +3,5 @@ package-lock.json
 index.html
 animate.gif
 cache*.json
+cache*.html
 app_config.js

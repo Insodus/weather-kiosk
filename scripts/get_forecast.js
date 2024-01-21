@@ -5,7 +5,7 @@ var app_config = require('./app_config');
 function getCurrentForecast() {
     return new Promise((resolve, reject) => {
         var opts = {
-            url: `https://api.weather.com/v3/wx/forecast/daily/5day?postalKey=${app_config.zipcode}:US&units=e&language=en&format=json&apiKey=${app_config.apikey}`,
+            url: `http://dataservice.accuweather.com/forecasts/v1/daily/5day/${app_config.station}?apikey=${app_config.apikey}`,
             timeout: 10000
         };
 

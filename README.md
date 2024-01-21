@@ -1,5 +1,10 @@
 # weather-kiosk
 
+create an account with Ac
+
+find your location code here
+https://developer.accuweather.com/accuweather-locations-api/apis/get/locations/v1/postalcodes/search
+
 create a file in scripts folder called app_config.js that looks like
 
 module.exports = {

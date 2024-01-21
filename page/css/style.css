@@ -9905,6 +9905,12 @@ span.customSelect.changed {
     margin:-3% 0 0 -35%;
 }
 
+#radar-frame {
+    display: block;
+    height: 450px;
+    width: 790px;
+}
+
 .forecast-item {
     min-height: 100px;
 }

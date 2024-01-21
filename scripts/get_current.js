@@ -5,7 +5,7 @@ var app_config = require('./app_config');
 function getCurrentTemp() {
     return new Promise((resolve, reject) => {
         var opts = {
-            url: `https://api.weather.com/v2/pws/observations/current?numericPrecision=decimal&stationId=${app_config.station}&units=e&format=json&apiKey=${app_config.apikey}`,
+            url: `http://dataservice.accuweather.com/currentconditions/v1/${app_config.station}?apikey=${app_config.apikey}`,
             timeout: 10000
         };
         

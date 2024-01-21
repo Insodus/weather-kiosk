@@ -72,8 +72,9 @@
                 <h2><i class="fa fa-map-marker red"></i><strong>Radar</strong></h2>
               </div>
               <div class="panel-body">
-                <div id="radar-wrap" class="radar-wide">
-                  <img src="animate.gif" />
+                <div id="radar-wrap" class="radar-wide radar-image">
+                  <img id="radar-image" src="animate.gif" />
+                  <iframe id="radar-frame" style="display: none;"></iframe>
                 </div>
               </div>
 
